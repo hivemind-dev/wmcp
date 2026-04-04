@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 1080" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="13">
+  <rect width="920" height="1080" fill="#fff"/>
+  <defs>
+    <marker id="sa" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#000"/></marker>
+    <marker id="sr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polyline points="0 0, 8 3, 0 6" fill="none" stroke="#555" stroke-width="1"/></marker>
+  </defs>
+
+  <!-- Participants: Host(85)  WmcpHost(290)  WmcpClient(535)  Module(770) -->
+  <rect x="30"  y="24" width="110" height="32" rx="4" fill="none" stroke="#000" stroke-width="1"/>
+  <text x="85"  y="45" text-anchor="middle" font-weight="700" fill="#000">Host</text>
+  <rect x="230" y="24" width="120" height="32" rx="4" fill="none" stroke="#000" stroke-width="1"/>
+  <text x="290" y="45" text-anchor="middle" font-weight="700" fill="#000">WmcpHost</text>
+  <rect x="470" y="24" width="130" height="32" rx="4" fill="none" stroke="#000" stroke-width="1"/>
+  <text x="535" y="45" text-anchor="middle" font-weight="700" fill="#000">WmcpClient</text>
+  <rect x="720" y="24" width="100" height="32" rx="4" fill="none" stroke="#000" stroke-width="1"/>
+  <text x="770" y="45" text-anchor="middle" font-weight="700" fill="#000">Module</text>
+
+  <!-- Lifelines -->
+  <line x1="85"  y1="56" x2="85"  y2="1060" stroke="#000" stroke-width="0.5" stroke-dasharray="4 3"/>
+  <line x1="290" y1="56" x2="290" y2="1060" stroke="#000" stroke-width="0.5" stroke-dasharray="4 3"/>
+  <line x1="535" y1="56" x2="535" y2="1060" stroke="#000" stroke-width="0.5" stroke-dasharray="4 3"/>
+  <line x1="770" y1="56" x2="770" y2="1060" stroke="#000" stroke-width="0.5" stroke-dasharray="4 3"/>
+
+  <!-- ═══ MODULE REGISTRATION ═══ -->
+  <rect x="20" y="76" width="880" height="80" rx="4" fill="none" stroke="#000" stroke-width="0.75"/>
+  <text x="36" y="92" font-size="10" fill="#000" font-weight="700">MODULE REGISTRATION</text>
+
+  <line x1="770" y1="112" x2="545" y2="112" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="658" y="106" text-anchor="middle" fill="#000" font-size="11">new WmcpClient(manifest)</text>
+
+  <line x1="770" y1="138" x2="545" y2="138" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="658" y="132" text-anchor="middle" fill="#000" font-size="11">_registerCapabilities(handlers)</text>
+
+  <!-- ═══ HOST INITIALIZATION ═══ -->
+  <rect x="20" y="176" width="880" height="182" rx="4" fill="none" stroke="#000" stroke-width="0.75"/>
+  <text x="36" y="192" font-size="10" fill="#000" font-weight="700">HOST INITIALIZATION</text>
+
+  <line x1="85" y1="212" x2="280" y2="212" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="182" y="206" text-anchor="middle" fill="#000" font-size="11">new WmcpHost(client, config)</text>
+
+  <line x1="85" y1="242" x2="280" y2="242" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="182" y="236" text-anchor="middle" fill="#000" font-size="11">override(name, handler)  [optional]</text>
+
+  <line x1="85" y1="272" x2="280" y2="272" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="182" y="266" text-anchor="middle" fill="#000" font-size="11">connect() / connectDirect()  [host:requires]</text>
+
+  <line x1="290" y1="302" x2="525" y2="302" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="408" y="296" text-anchor="middle" fill="#000" font-size="11">_override() + _bindRequires(handlers)</text>
+
+  <rect x="460" y="314" width="240" height="24" rx="3" fill="none" stroke="#000" stroke-width="0.75"/>
+  <text x="580" y="330" text-anchor="middle" fill="#000" font-size="10">Validate: host:requires + module:capabilities</text>
+
+  <!-- ═══ EVENT SUBSCRIPTIONS ═══ -->
+  <rect x="20" y="378" width="880" height="80" rx="4" fill="none" stroke="#000" stroke-width="0.75"/>
+  <text x="36" y="394" font-size="10" fill="#000" font-weight="700">EVENT SUBSCRIPTIONS</text>
+
+  <line x1="85" y1="414" x2="280" y2="414" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="182" y="408" text-anchor="middle" fill="#000" font-size="11">on(event, cb)  [module:events]</text>
+
+  <line x1="770" y1="440" x2="545" y2="440" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="658" y="434" text-anchor="middle" fill="#000" font-size="11">on(event, cb)  [module:listeners]</text>
+
+  <!-- ═══ MOUNT ═══ -->
+  <line x1="85" y1="486" x2="760" y2="486" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="420" y="480" text-anchor="middle" fill="#000" font-size="11" font-weight="600">mount(options)</text>
+
+  <!-- ═══ RUNTIME (bidirectional) ═══ -->
+  <rect x="50" y="510" width="840" height="430" rx="4" fill="none" stroke="#000" stroke-width="0.75"/>
+  <text x="66" y="526" font-size="10" fill="#000" font-weight="700">RUNTIME (bidirectional)</text>
+
+  <!-- ── Host calls module:capabilities ── -->
+  <text x="66" y="550" font-size="9" fill="#555" font-style="italic">Host calls module:capabilities</text>
+  <line x1="85" y1="564" x2="280" y2="564" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="182" y="558" text-anchor="middle" fill="#000" font-size="11">call(capability, params)</text>
+
+  <line x1="290" y1="588" x2="525" y2="588" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="408" y="582" text-anchor="middle" fill="#000" font-size="11">dispatch: override or module handler</text>
+
+  <line x1="525" y1="610" x2="300" y2="610" stroke="#555" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#sr)"/>
+  <text x="412" y="604" text-anchor="middle" fill="#555" font-size="11">result</text>
+
+  <line x1="280" y1="630" x2="95" y2="630" stroke="#555" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#sr)"/>
+  <text x="188" y="624" text-anchor="middle" fill="#555" font-size="11">result</text>
+
+  <!-- ── Module calls host:requires ── -->
+  <text x="66" y="660" font-size="9" fill="#555" font-style="italic">Module calls host:requires</text>
+  <line x1="770" y1="676" x2="545" y2="676" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="658" y="670" text-anchor="middle" fill="#000" font-size="11">call(requirement, params)</text>
+
+  <line x1="525" y1="700" x2="300" y2="700" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="412" y="694" text-anchor="middle" fill="#000" font-size="11">host:requires handler</text>
+
+  <line x1="300" y1="720" x2="525" y2="720" stroke="#555" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#sr)"/>
+  <text x="412" y="714" text-anchor="middle" fill="#555" font-size="11">result</text>
+
+  <line x1="545" y1="740" x2="760" y2="740" stroke="#555" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#sr)"/>
+  <text x="652" y="734" text-anchor="middle" fill="#555" font-size="11">result</text>
+
+  <!-- ── module:events (module emits → host listens) ── -->
+  <text x="66" y="770" font-size="9" fill="#555" font-style="italic">module:events (module emits, host listens)</text>
+  <line x1="770" y1="786" x2="545" y2="786" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="658" y="780" text-anchor="middle" fill="#000" font-size="11">emit(event, data)</text>
+
+  <line x1="525" y1="806" x2="95" y2="806" stroke="#555" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#sr)"/>
+  <text x="310" y="800" text-anchor="middle" fill="#555" font-size="11">host event callback</text>
+
+  <!-- ── module:listeners (host emits → module listens) ── -->
+  <text x="66" y="836" font-size="9" fill="#555" font-style="italic">module:listeners (host emits, module listens)</text>
+  <line x1="85" y1="852" x2="280" y2="852" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="182" y="846" text-anchor="middle" fill="#000" font-size="11">emit(event, data)</text>
+
+  <line x1="290" y1="876" x2="525" y2="876" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="408" y="870" text-anchor="middle" fill="#000" font-size="11">_emitToModule(event, data)</text>
+
+  <line x1="545" y1="896" x2="760" y2="896" stroke="#555" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#sr)"/>
+  <text x="652" y="890" text-anchor="middle" fill="#555" font-size="11">module listener callback</text>
+
+  <!-- Activation bars -->
+  <rect x="82"  y="554" width="6" height="86"  rx="1" fill="none" stroke="#000" stroke-width="0.75"/>
+  <rect x="287" y="554" width="6" height="86"  rx="1" fill="none" stroke="#000" stroke-width="0.75"/>
+  <rect x="532" y="578" width="6" height="42"  rx="1" fill="none" stroke="#000" stroke-width="0.75"/>
+  <rect x="767" y="666" width="6" height="84"  rx="1" fill="none" stroke="#000" stroke-width="0.75"/>
+  <rect x="532" y="666" width="6" height="84"  rx="1" fill="none" stroke="#000" stroke-width="0.75"/>
+  <rect x="287" y="690" width="6" height="40"  rx="1" fill="none" stroke="#000" stroke-width="0.75"/>
+
+  <!-- ═══ TEARDOWN ═══ -->
+  <rect x="20" y="960" width="880" height="80" rx="4" fill="none" stroke="#000" stroke-width="0.75"/>
+  <text x="36" y="976" font-size="10" fill="#000" font-weight="700">TEARDOWN</text>
+
+  <line x1="85" y1="996" x2="760" y2="996" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="420" y="990" text-anchor="middle" fill="#000" font-size="11" font-weight="600">unmount</text>
+
+  <line x1="85" y1="1024" x2="525" y2="1024" stroke="#000" stroke-width="1" marker-end="url(#sa)"/>
+  <text x="305" y="1018" text-anchor="middle" fill="#000" font-size="11">host.destroy() + client.destroy()</text>
+</svg>

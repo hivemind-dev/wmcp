@@ -1,0 +1,41 @@
+{
+  "name": "@aurorah/wmcp",
+  "version": "1.0.2",
+  "description": "Web Module Connection Protocol (wMCP) — a standardized protocol for connecting encapsulated web UI modules to host applications",
+  "type": "module",
+  "main": "./dist/core/index.js",
+  "types": "./dist/core/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/core/index.js",
+      "types": "./dist/core/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "example:counter": "npx tsx examples/counter/host-app.ts",
+    "example:counter:server": "npx tsx examples/counter/mock-server.ts"
+  },
+  "keywords": [
+    "wmcp",
+    "web-module-connection-protocol",
+    "module-protocol",
+    "micro-frontend",
+    "web-components",
+    "plugin-architecture"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/z-order/wmcp.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

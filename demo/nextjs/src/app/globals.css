@@ -1,0 +1,275 @@
+:root {
+  --background: #f8f9fa;
+  --foreground: #171717;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-900: #111827;
+  --green-400: #4ade80;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+  --blue-400: #60a5fa;
+  --blue-600: #2563eb;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --white: #ffffff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+code {
+  font-family: monospace;
+  font-size: 0.85em;
+}
+
+/* Nav */
+.nav {
+  border-bottom: 1px solid #e5e7eb;
+  background: var(--white);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.nav-logo {
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: -0.025em;
+}
+
+.nav-link {
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.nav-link-ssr:hover {
+  color: var(--green-600);
+}
+
+.nav-link-csr:hover {
+  color: var(--blue-600);
+}
+
+/* Main */
+.main {
+  flex: 1;
+  max-width: 42rem;
+  margin: 0 auto;
+  width: 100%;
+  padding: 2rem 1rem;
+}
+
+/* Home */
+.home-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.home-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.home-subtitle {
+  color: var(--gray-500);
+  margin-top: 0.5rem;
+}
+
+.home-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .home-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.home-card {
+  display: block;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  background: var(--white);
+  transition: border-color 0.15s;
+}
+
+.home-card-ssr:hover {
+  border-color: var(--green-400);
+}
+
+.home-card-ssr:hover .home-card-title {
+  color: var(--green-600);
+}
+
+.home-card-csr:hover {
+  border-color: var(--blue-400);
+}
+
+.home-card-csr:hover .home-card-title {
+  color: var(--blue-600);
+}
+
+.home-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+
+.home-card-desc {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  margin-top: 0.25rem;
+}
+
+.home-card-code {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  background: var(--gray-50);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+}
+
+.home-footer {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.home-footer ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Page (CSR / SSR) */
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.page-desc {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  margin-top: 0.25rem;
+}
+
+.page-desc code {
+  background: var(--gray-100);
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
+}
+
+.counter-panel {
+  background: var(--white);
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.counter-value {
+  font-size: 3rem;
+  font-family: monospace;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.btn-red {
+  background: var(--red-500);
+}
+
+.btn-red:hover {
+  background: var(--red-600);
+}
+
+.btn-green {
+  background: var(--green-600);
+}
+
+.btn-green:hover {
+  background: var(--green-700);
+}
+
+.btn-gray {
+  background: var(--gray-500);
+}
+
+.btn-gray:hover {
+  background: var(--gray-600);
+}
+
+.log-panel {
+  background: var(--gray-900);
+  color: #4ade80;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  font-size: 0.75rem;
+  font-family: monospace;
+  height: 16rem;
+  overflow-y: auto;
+}
+
+.log-empty {
+  color: var(--gray-600);
+}

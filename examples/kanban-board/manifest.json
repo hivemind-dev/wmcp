@@ -1,0 +1,174 @@
+{
+  "wmcp": "1.0",
+  "module": {
+    "name": "@aurorah/wmcp-kanban-board",
+    "version": "1.0.0",
+    "description": "Kanban board module with drag-and-drop, board sync, and task management"
+  },
+  "mount": {
+    "entry": "./kanban-module.ts",
+    "defaultElementId": "kanban-root"
+  },
+  "module:capabilities": {
+    "kanban:getBoard": {
+      "description": "Return the module's current in-memory board state",
+      "mode": "request",
+      "returns": {
+        "type": "object",
+        "description": "{ id, name, columns: [{ id, name, cards: [] }] }"
+      }
+    },
+    "kanban:getCard": {
+      "description": "Return a single card from the current board",
+      "mode": "request",
+      "params": {
+        "cardId": { "type": "string", "required": true, "description": "Card id" }
+      },
+      "returns": { "type": "object", "description": "Card object" }
+    },
+    "kanban:moveCard": {
+      "description": "Move a card between columns (updates UI state and persists via host)",
+      "mode": "request",
+      "params": {
+        "cardId": { "type": "string", "required": true },
+        "fromColumnId": { "type": "string", "required": false, "description": "Source column (for drag telemetry)" },
+        "targetColumnId": { "type": "string", "required": true },
+        "position": {
+          "type": "number",
+          "required": false,
+          "description": "Zero-based index in target column"
+        }
+      },
+      "returns": { "type": "object", "description": "{ success: boolean }" }
+    }
+  },
+  "module:events": {
+    "card:dragged": {
+      "description": "User started dragging a card",
+      "data": {
+        "cardId": { "type": "string" },
+        "fromColumnId": { "type": "string" }
+      }
+    },
+    "card:dropped": {
+      "description": "User dropped a card into a column",
+      "data": {
+        "cardId": { "type": "string" },
+        "toColumnId": { "type": "string" },
+        "position": { "type": "number" }
+      }
+    },
+    "board:changed": {
+      "description": "Board state changed (local mutation or external sync)",
+      "data": {
+        "action": {
+          "type": "string",
+          "description": "'create' | 'update' | 'move' | 'delete' | 'external'"
+        },
+        "cardId": { "type": "string" }
+      }
+    }
+  },
+  "module:listeners": {
+    "board:externalUpdate": {
+      "description": "Host notifies the module of remote board changes",
+      "data": {
+        "board": { "type": "object", "description": "Full board snapshot" }
+      }
+    }
+  },
+  "host:requires": {
+    "board:load": {
+      "description": "Load the full board state (columns and cards)",
+      "mode": "request",
+      "params": {
+        "boardId": { "type": "string", "required": true }
+      },
+      "returns": {
+        "type": "object",
+        "description": "{ id, name, columns: [{ id, name, cards: [] }] }"
+      },
+      "hint": { "method": "GET", "path": "/boards/{boardId}" }
+    },
+    "card:create": {
+      "description": "Create a new card in a column",
+      "mode": "request",
+      "params": {
+        "boardId": { "type": "string", "required": true },
+        "columnId": { "type": "string", "required": true },
+        "title": { "type": "string", "required": true },
+        "description": { "type": "string", "required": false },
+        "assignee": { "type": "string", "required": false }
+      },
+      "returns": { "type": "object", "description": "Created card object" },
+      "hint": { "method": "POST", "path": "/boards/{boardId}/cards" }
+    },
+    "card:update": {
+      "description": "Update card properties",
+      "mode": "request",
+      "params": {
+        "cardId": { "type": "string", "required": true },
+        "title": { "type": "string", "required": false },
+        "description": { "type": "string", "required": false },
+        "assignee": { "type": "string", "required": false },
+        "labels": { "type": "array", "required": false }
+      },
+      "returns": { "type": "object", "description": "Updated card object" },
+      "hint": { "method": "PATCH", "path": "/cards/{cardId}" }
+    },
+    "card:move": {
+      "description": "Move a card to a different column or position",
+      "mode": "request",
+      "params": {
+        "cardId": { "type": "string", "required": true },
+        "targetColumnId": { "type": "string", "required": true },
+        "position": {
+          "type": "number",
+          "required": false,
+          "description": "Zero-based index in target column"
+        }
+      },
+      "returns": { "type": "void" },
+      "hint": { "method": "POST", "path": "/cards/{cardId}/move" }
+    },
+    "card:delete": {
+      "description": "Delete a card",
+      "mode": "request",
+      "params": {
+        "cardId": { "type": "string", "required": true }
+      },
+      "returns": { "type": "void" },
+      "hint": { "method": "DELETE", "path": "/cards/{cardId}" }
+    },
+    "board:watch": {
+      "description": "Stream real-time board updates from other users",
+      "mode": "stream",
+      "params": {
+        "boardId": { "type": "string", "required": true }
+      },
+      "returns": {
+        "type": "object",
+        "description": "{ type, data, userId, timestamp }"
+      },
+      "hint": { "method": "GET", "path": "/boards/{boardId}/watch" },
+      "optional": true
+    }
+  },
+  "host:config": {
+    "columns": {
+      "type": "array",
+      "default": ["To Do", "In Progress", "Done"],
+      "description": "Default column names"
+    },
+    "swimlanes": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable swimlane grouping by assignee"
+    },
+    "assignees": {
+      "type": "array",
+      "default": [],
+      "description": "List of available assignees"
+    }
+  }
+}

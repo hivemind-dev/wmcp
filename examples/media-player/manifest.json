@@ -1,0 +1,151 @@
+{
+  "wmcp": "1.0",
+  "module": {
+    "name": "@aurorah/wmcp-media-player",
+    "version": "1.0.0",
+    "description": "Media player module with playlist integration, stream playback, and progress events"
+  },
+  "mount": {
+    "entry": "./player-module.ts",
+    "defaultElementId": "media-player-root"
+  },
+  "module:capabilities": {
+    "player:play": {
+      "description": "Play a track by index in the loaded playlist",
+      "mode": "request",
+      "params": {
+        "trackIndex": { "type": "number", "required": true, "description": "Zero-based index in the current playlist" }
+      },
+      "returns": { "type": "object", "description": "{ ok: boolean }" }
+    },
+    "player:pause": {
+      "description": "Pause playback",
+      "mode": "request",
+      "returns": { "type": "void" }
+    },
+    "player:stop": {
+      "description": "Stop playback and clear current track selection",
+      "mode": "request",
+      "returns": { "type": "void" }
+    },
+    "player:getState": {
+      "description": "Return current playback state and related fields",
+      "mode": "request",
+      "returns": { "type": "object", "description": "PlaybackState snapshot" }
+    },
+    "player:setVolume": {
+      "description": "Set playback volume (0.0 to 1.0)",
+      "mode": "request",
+      "params": {
+        "volume": { "type": "number", "required": true, "description": "Linear gain 0..1" }
+      },
+      "returns": { "type": "void" }
+    }
+  },
+  "module:events": {
+    "playback:stateChanged": {
+      "description": "Playback state changed",
+      "data": {
+        "state": { "type": "string", "description": "playing | paused | stopped | buffering" },
+        "trackId": { "type": "string", "description": "Current track id or empty when none" }
+      }
+    },
+    "playback:progress": {
+      "description": "Playback position update",
+      "data": {
+        "trackId": { "type": "string" },
+        "currentTime": { "type": "number" },
+        "duration": { "type": "number" },
+        "percentage": { "type": "number" }
+      }
+    },
+    "track:ended": {
+      "description": "Current track finished",
+      "data": {
+        "trackId": { "type": "string" },
+        "nextTrackId": { "type": "string", "description": "Next track id if any" }
+      }
+    }
+  },
+  "module:listeners": {
+    "playlist:updated": {
+      "description": "Host notifies that the playlist changed externally; module should refresh",
+      "data": {
+        "playlistId": { "type": "string", "description": "Playlist id to reload" }
+      }
+    }
+  },
+  "host:requires": {
+    "playlist:load": {
+      "description": "Load playlist by id",
+      "mode": "request",
+      "params": {
+        "playlistId": { "type": "string", "required": true }
+      },
+      "returns": { "type": "object", "description": "{ id, name, tracks[] }" },
+      "hint": { "method": "GET", "path": "/playlists/{playlistId}" }
+    },
+    "playlist:add": {
+      "description": "Add a track to a playlist",
+      "mode": "request",
+      "params": {
+        "playlistId": { "type": "string", "required": true },
+        "trackId": { "type": "string", "required": true }
+      },
+      "returns": { "type": "object", "description": "Updated playlist" },
+      "hint": { "method": "POST", "path": "/playlists/{playlistId}/tracks" }
+    },
+    "playlist:remove": {
+      "description": "Remove a track from a playlist",
+      "mode": "request",
+      "params": {
+        "playlistId": { "type": "string", "required": true },
+        "trackId": { "type": "string", "required": true }
+      },
+      "returns": { "type": "void" },
+      "hint": { "method": "DELETE", "path": "/playlists/{playlistId}/tracks/{trackId}" }
+    },
+    "track:info": {
+      "description": "Track metadata",
+      "mode": "request",
+      "params": {
+        "trackId": { "type": "string", "required": true }
+      },
+      "returns": { "type": "object", "description": "Track metadata" },
+      "hint": { "method": "GET", "path": "/tracks/{trackId}" }
+    },
+    "track:stream": {
+      "description": "Stream media chunks for a track",
+      "mode": "stream",
+      "params": {
+        "trackId": { "type": "string", "required": true },
+        "startPosition": { "type": "number", "required": false, "description": "Start offset in seconds" }
+      },
+      "returns": { "type": "object", "description": "Stream chunks" },
+      "hint": { "method": "GET", "path": "/tracks/{trackId}/stream" }
+    }
+  },
+  "host:config": {
+    "autoplay": {
+      "type": "boolean",
+      "default": false,
+      "description": "Start playback after loadPlaylist when true"
+    },
+    "volume": {
+      "type": "number",
+      "default": 0.8,
+      "description": "Initial volume 0..1"
+    },
+    "repeat": {
+      "type": "string",
+      "enum": ["off", "all", "one"],
+      "default": "off",
+      "description": "Repeat mode"
+    },
+    "shuffle": {
+      "type": "boolean",
+      "default": false,
+      "description": "Shuffle order when advancing"
+    }
+  }
+}

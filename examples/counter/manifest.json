@@ -1,0 +1,82 @@
+{
+  "wmcp": "1.0",
+  "module": {
+    "name": "@aurorah/wmcp-counter",
+    "version": "1.0.0",
+    "description": "Minimal counter module — the simplest possible wMCP example"
+  },
+  "mount": {
+    "entry": "./counter-module.ts",
+    "defaultElementId": "counter-root"
+  },
+  "module:capabilities": {
+    "counter:get": {
+      "description": "Get the current counter value",
+      "mode": "request",
+      "returns": { "type": "object", "description": "{ value: number }" }
+    },
+    "counter:increment": {
+      "description": "Increment the counter by a given amount",
+      "mode": "request",
+      "params": {
+        "amount": { "type": "number", "required": false, "description": "Increment amount (default: 1)" }
+      },
+      "returns": { "type": "object", "description": "{ value: number }" }
+    }
+  },
+  "module:events": {
+    "counter:changed": {
+      "description": "Emitted when the counter value changes",
+      "data": {
+        "value": { "type": "number" },
+        "source": { "type": "string", "description": "'user' | 'sync' | 'reset'" }
+      }
+    }
+  },
+  "module:listeners": {
+    "counter:reset": {
+      "description": "Host requests a counter reset to initial value",
+      "data": {}
+    }
+  },
+  "host:requires": {
+    "persist:load": {
+      "description": "Load saved counter state from backend storage",
+      "mode": "request",
+      "returns": { "type": "object", "description": "{ value: number }" },
+      "hint": { "method": "GET", "path": "/counter" }
+    },
+    "persist:save": {
+      "description": "Save counter state to backend storage",
+      "mode": "request",
+      "params": {
+        "value": { "type": "number", "required": true, "description": "Counter value to persist" }
+      },
+      "returns": { "type": "object", "description": "{ success: boolean }" },
+      "hint": { "method": "POST", "path": "/counter" }
+    },
+    "log:write": {
+      "description": "Write an audit log entry",
+      "mode": "request",
+      "params": {
+        "action": { "type": "string", "required": true, "description": "Action name" },
+        "detail": { "type": "object", "required": false, "description": "Additional context" }
+      },
+      "returns": { "type": "void" },
+      "hint": { "method": "POST", "path": "/logs" },
+      "optional": true
+    }
+  },
+  "host:config": {
+    "initialValue": {
+      "type": "number",
+      "default": 0,
+      "description": "Starting counter value"
+    },
+    "step": {
+      "type": "number",
+      "default": 1,
+      "description": "Default increment step"
+    }
+  }
+}

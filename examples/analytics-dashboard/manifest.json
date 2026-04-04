@@ -1,0 +1,121 @@
+{
+  "wmcp": "1.0",
+  "module": {
+    "name": "@aurorah/wmcp-analytics-dashboard",
+    "version": "1.0.0",
+    "description": "Analytics dashboard module with charting, queries, and real-time data feeds"
+  },
+  "mount": {
+    "entry": "./dashboard-module.ts",
+    "defaultElementId": "dashboard-root"
+  },
+  "module:capabilities": {
+    "dashboard:getFilters": {
+      "description": "Return active dashboard filters and related view state",
+      "mode": "request",
+      "returns": {
+        "type": "object",
+        "description": "{ filters, chartType, dateRange }"
+      }
+    },
+    "dashboard:setChart": {
+      "description": "Set the active chart visualization type",
+      "mode": "request",
+      "params": {
+        "chartType": {
+          "type": "string",
+          "required": true,
+          "enum": ["line", "bar", "area", "pie"],
+          "description": "Chart type"
+        }
+      },
+      "returns": { "type": "object", "description": "{ chartType }" }
+    },
+    "dashboard:refresh": {
+      "description": "Trigger a data refresh using current filters and date range",
+      "mode": "request",
+      "returns": {
+        "type": "object",
+        "description": "{ ok, refreshedAt, pointCount }"
+      }
+    }
+  },
+  "module:events": {
+    "filter:changed": {
+      "description": "User changed dashboard filters",
+      "data": {
+        "filters": { "type": "object" },
+        "dateRange": { "type": "object" }
+      }
+    },
+    "chart:clicked": {
+      "description": "User clicked on a chart data point",
+      "data": {
+        "metric": { "type": "string" },
+        "value": { "type": "number" },
+        "timestamp": { "type": "string" }
+      }
+    }
+  },
+  "module:listeners": {
+    "data:invalidated": {
+      "description": "Host signals backend data is stale; module should refresh",
+      "data": {
+        "reason": { "type": "string", "required": false, "description": "Optional reason" }
+      }
+    }
+  },
+  "host:requires": {
+    "metrics:query": {
+      "description": "Query metrics data with filters and time range",
+      "mode": "request",
+      "params": {
+        "metric": { "type": "string", "required": true, "description": "Metric name" },
+        "startDate": { "type": "string", "required": true, "description": "ISO date string" },
+        "endDate": { "type": "string", "required": true, "description": "ISO date string" },
+        "groupBy": { "type": "string", "required": false, "description": "hour | day | week | month" },
+        "filters": { "type": "object", "required": false, "description": "Key-value filter pairs" }
+      },
+      "returns": { "type": "array", "description": "Array of { timestamp, value, label? }" },
+      "hint": { "method": "POST", "path": "/metrics/query" }
+    },
+    "metrics:aggregate": {
+      "description": "Get aggregated summary (totals, averages, min, max)",
+      "mode": "request",
+      "params": {
+        "metrics": { "type": "array", "required": true, "description": "Metric names" },
+        "startDate": { "type": "string", "required": true },
+        "endDate": { "type": "string", "required": true }
+      },
+      "returns": { "type": "object", "description": "{ metric: { total, avg, min, max } }" },
+      "hint": { "method": "POST", "path": "/metrics/aggregate" }
+    },
+    "metrics:live": {
+      "description": "Stream real-time metric updates",
+      "mode": "stream",
+      "params": {
+        "metrics": { "type": "array", "required": true, "description": "Metrics to subscribe to" }
+      },
+      "returns": { "type": "object", "description": "{ metric, value, timestamp }" },
+      "hint": { "method": "GET", "path": "/metrics/live" }
+    }
+  },
+  "host:config": {
+    "dateRange": {
+      "type": "object",
+      "default": { "preset": "last7days", "start": "2026-03-25", "end": "2026-04-01" },
+      "description": "Initial date range (preset and/or start/end ISO dates)"
+    },
+    "refreshInterval": {
+      "type": "number",
+      "default": 30000,
+      "description": "Auto-refresh interval in milliseconds (0 = disabled)"
+    },
+    "chartType": {
+      "type": "string",
+      "enum": ["line", "bar", "area", "pie"],
+      "default": "line",
+      "description": "Default chart visualization type"
+    }
+  }
+}

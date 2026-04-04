@@ -1,0 +1,168 @@
+{
+  "wmcp": "1.0",
+  "module": {
+    "name": "@aurorah/wmcp-file-manager",
+    "version": "1.0.0",
+    "description": "File manager module: navigation, selection, view mode; host supplies filesystem IO"
+  },
+  "mount": {
+    "entry": "./file-manager-module.ts",
+    "defaultElementId": "file-manager-root"
+  },
+  "module:capabilities": {
+    "fm:getSelectedPath": {
+      "description": "Snapshot of root, navigation, selection, and view state",
+      "mode": "request",
+      "returns": {
+        "type": "object",
+        "description": "{ rootPath, showHidden, viewMode, currentPath, selectedPath, selectedType }"
+      }
+    },
+    "fm:navigate": {
+      "description": "Navigate to a directory path (updates current path and selection)",
+      "mode": "request",
+      "params": {
+        "path": { "type": "string", "required": true, "description": "Directory path to open" }
+      },
+      "returns": {
+        "type": "object",
+        "description": "{ currentPath, selectedPath, selectedType }"
+      }
+    },
+    "fm:setViewMode": {
+      "description": "Set listing view mode",
+      "mode": "request",
+      "params": {
+        "viewMode": {
+          "type": "string",
+          "required": true,
+          "enum": ["tree", "grid", "list"],
+          "description": "View mode"
+        }
+      },
+      "returns": { "type": "object", "description": "{ viewMode }" }
+    }
+  },
+  "module:events": {
+    "fs:selected": {
+      "description": "Selection or navigation highlighted a path",
+      "data": {
+        "path": { "type": "string" },
+        "type": { "type": "string", "description": "'file' or 'directory'" }
+      }
+    },
+    "fs:renamed": {
+      "description": "A file or directory was moved or renamed",
+      "data": {
+        "from": { "type": "string" },
+        "to": { "type": "string" }
+      }
+    },
+    "fs:deleted": {
+      "description": "A file or directory was deleted",
+      "data": {
+        "path": { "type": "string" }
+      }
+    }
+  },
+  "module:listeners": {
+    "fs:externalChange": {
+      "description": "Host notifies the module that the filesystem changed outside the module",
+      "data": {
+        "reason": { "type": "string", "description": "Optional human-readable reason" },
+        "paths": { "type": "array", "description": "Optional list of affected paths" }
+      }
+    }
+  },
+  "host:requires": {
+    "fs:list": {
+      "description": "List files and directories under a given path",
+      "mode": "request",
+      "params": {
+        "path": { "type": "string", "required": true, "description": "Directory path" },
+        "recursive": { "type": "boolean", "required": false, "description": "Include subdirectories" }
+      },
+      "returns": { "type": "array", "description": "Array of { name, path, type, size, modifiedAt }" },
+      "hint": { "method": "GET", "path": "/files" }
+    },
+    "fs:read": {
+      "description": "Read file content",
+      "mode": "request",
+      "params": {
+        "path": { "type": "string", "required": true }
+      },
+      "returns": { "type": "object", "description": "{ path, content, encoding, size }" },
+      "hint": { "method": "GET", "path": "/files/content" }
+    },
+    "fs:write": {
+      "description": "Write content to a file (create or overwrite)",
+      "mode": "request",
+      "params": {
+        "path": { "type": "string", "required": true },
+        "content": { "type": "string", "required": true },
+        "createDirs": { "type": "boolean", "required": false, "description": "Auto-create parent directories" }
+      },
+      "returns": { "type": "object", "description": "{ path, size, modifiedAt }" },
+      "hint": { "method": "PUT", "path": "/files/content" }
+    },
+    "fs:delete": {
+      "description": "Delete a file or directory",
+      "mode": "request",
+      "params": {
+        "path": { "type": "string", "required": true },
+        "recursive": { "type": "boolean", "required": false }
+      },
+      "returns": { "type": "void" },
+      "hint": { "method": "DELETE", "path": "/files" }
+    },
+    "fs:move": {
+      "description": "Move or rename a file or directory",
+      "mode": "request",
+      "params": {
+        "from": { "type": "string", "required": true },
+        "to": { "type": "string", "required": true }
+      },
+      "returns": { "type": "object", "description": "{ from, to, modifiedAt }" },
+      "hint": { "method": "POST", "path": "/files/move" }
+    },
+    "fs:upload": {
+      "description": "Upload a binary file",
+      "mode": "request",
+      "params": {
+        "path": { "type": "string", "required": true, "description": "Target path" },
+        "data": { "type": "blob", "required": true, "description": "File binary data" }
+      },
+      "returns": { "type": "object", "description": "{ path, size, modifiedAt }" },
+      "hint": { "method": "POST", "path": "/files/upload" },
+      "optional": true
+    },
+    "fs:download": {
+      "description": "Download a file as binary",
+      "mode": "request",
+      "params": {
+        "path": { "type": "string", "required": true }
+      },
+      "returns": { "type": "blob", "description": "File binary data" },
+      "hint": { "method": "GET", "path": "/files/download" },
+      "optional": true
+    }
+  },
+  "host:config": {
+    "rootPath": {
+      "type": "string",
+      "default": "/",
+      "description": "Root directory to display"
+    },
+    "showHidden": {
+      "type": "boolean",
+      "default": false,
+      "description": "Show hidden files (dot-prefixed)"
+    },
+    "viewMode": {
+      "type": "string",
+      "enum": ["tree", "grid", "list"],
+      "default": "tree",
+      "description": "Initial file listing view mode"
+    }
+  }
+}

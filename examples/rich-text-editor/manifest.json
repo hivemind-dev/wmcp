@@ -1,0 +1,152 @@
+{
+  "wmcp": "1.0",
+  "module": {
+    "name": "@aurorah/wmcp-rich-editor",
+    "version": "1.0.0",
+    "description": "Rich text editor module with host-backed document persistence"
+  },
+  "mount": {
+    "entry": "./editor-module.ts",
+    "defaultElementId": "rich-editor-root"
+  },
+  "module:capabilities": {
+    "editor:getContent": {
+      "description": "Return current in-memory document content and metadata",
+      "mode": "request",
+      "returns": {
+        "type": "object",
+        "description": "{ content, docId, title, dirty, readOnly }"
+      }
+    },
+    "editor:setContent": {
+      "description": "Replace the entire document body in the editor buffer",
+      "mode": "request",
+      "params": {
+        "content": {
+          "type": "string",
+          "required": true,
+          "description": "Full document text or HTML fragment"
+        }
+      },
+      "returns": { "type": "object", "description": "{ ok: boolean }" }
+    },
+    "editor:format": {
+      "description": "Apply a formatting transform to the current buffer",
+      "mode": "request",
+      "params": {
+        "kind": {
+          "type": "string",
+          "required": true,
+          "description": "One of: bold, italic, heading",
+          "enum": ["bold", "italic", "heading"]
+        }
+      },
+      "returns": { "type": "object", "description": "{ content: string }" }
+    }
+  },
+  "module:events": {
+    "doc:modified": {
+      "description": "Document buffer changed since last save",
+      "data": {
+        "docId": { "type": "string" },
+        "dirty": { "type": "boolean" }
+      }
+    },
+    "doc:saved": {
+      "description": "Document was persisted via host doc:save",
+      "data": {
+        "docId": { "type": "string" },
+        "version": { "type": "number" }
+      }
+    },
+    "selection:changed": {
+      "description": "Simulated caret or selection update after edit",
+      "data": {
+        "start": { "type": "number" },
+        "end": { "type": "number" },
+        "text": { "type": "string" }
+      }
+    }
+  },
+  "module:listeners": {
+    "theme:changed": {
+      "description": "Host switched editor chrome theme",
+      "data": {
+        "theme": { "type": "string" }
+      }
+    }
+  },
+  "host:requires": {
+    "doc:load": {
+      "description": "Load a document by ID from host storage",
+      "mode": "request",
+      "params": {
+        "docId": { "type": "string", "required": true, "description": "Document identifier" }
+      },
+      "returns": {
+        "type": "object",
+        "description": "{ id, title, content, updatedAt }"
+      },
+      "hint": { "method": "GET", "path": "/documents/{docId}" }
+    },
+    "doc:save": {
+      "description": "Persist document content to host storage",
+      "mode": "request",
+      "params": {
+        "docId": { "type": "string", "required": true },
+        "title": { "type": "string", "required": false },
+        "content": { "type": "string", "required": true }
+      },
+      "returns": { "type": "object", "description": "{ id, updatedAt }" },
+      "hint": { "method": "PUT", "path": "/documents/{docId}" }
+    },
+    "doc:list": {
+      "description": "List documents (paginated)",
+      "mode": "request",
+      "params": {
+        "page": { "type": "number", "required": false },
+        "limit": { "type": "number", "required": false }
+      },
+      "returns": { "type": "array", "description": "Array of { id, title, content, updatedAt }" },
+      "hint": { "method": "GET", "path": "/documents" }
+    },
+    "doc:export": {
+      "description": "Export document bytes (e.g. PDF or HTML)",
+      "mode": "request",
+      "params": {
+        "docId": { "type": "string", "required": true },
+        "format": {
+          "type": "string",
+          "required": true,
+          "enum": ["pdf", "html", "markdown"]
+        }
+      },
+      "returns": { "type": "blob", "description": "Exported file" },
+      "hint": { "method": "POST", "path": "/documents/{docId}/export" },
+      "optional": true
+    }
+  },
+  "host:config": {
+    "theme": {
+      "type": "string",
+      "enum": ["light", "dark", "sepia"],
+      "default": "light",
+      "description": "Editor color theme"
+    },
+    "locale": {
+      "type": "string",
+      "default": "en",
+      "description": "UI language"
+    },
+    "toolbar": {
+      "type": "array",
+      "default": ["bold", "italic", "heading", "list", "link", "image"],
+      "description": "Enabled toolbar actions"
+    },
+    "readOnly": {
+      "type": "boolean",
+      "default": false,
+      "description": "Disable editing"
+    }
+  }
+}
