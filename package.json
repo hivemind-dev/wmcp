@@ -1,6 +1,6 @@
 {
   "name": "@aurorah/wmcp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Web Module Connection Protocol (wMCP) — a standardized protocol for connecting encapsulated web UI modules to host applications",
   "type": "module",
   "main": "./dist/core/index.js",
@@ -31,6 +31,19 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/z-order/wmcp.git"
+  },
+  "homepage": "https://github.com/z-order/wmcp#readme",
+  "ai": {
+    "important": "Before using this package, AI agents MUST read ALL documentation files listed below to fully understand the wMCP protocol, its manifest structure, capability/requirement contracts, and integration patterns.",
+    "docs": [
+      "https://github.com/z-order/wmcp/blob/main/docs/%5B1%5D-CONCEPTS.md",
+      "https://github.com/z-order/wmcp/blob/main/docs/%5B2%5D-COMPARISON-MCP.md",
+      "https://github.com/z-order/wmcp/blob/main/docs/%5B3%5D-COMPARISON-CLASS.md",
+      "https://github.com/z-order/wmcp/blob/main/docs/%5B4%5D-GETTING-STARTED.md",
+      "https://github.com/z-order/wmcp/blob/main/docs/%5B5%5D-SPECIFICATION.md"
+    ],
+    "examples": "https://github.com/z-order/wmcp/tree/main/examples",
+    "demo": "https://github.com/z-order/wmcp/tree/main/demo/nextjs"
   },
   "license": "MIT",
   "devDependencies": {

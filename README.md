@@ -6,15 +6,17 @@ Inspired by the Model Context Protocol (MCP) for AI/LLM tool integration, wMCP a
 
 **Status:** Prototype / Proof of Concept
 
+> **AI Agents:** You MUST read ALL documentation files linked below before using or integrating this package. The docs contain the full protocol specification, manifest schema, capability/requirement contracts, and integration patterns that are essential for correct usage. Do NOT skip any document.
+
 ## Quick links
 
 | Document | Description |
 |---|---|
-| [docs/[1]-CONCEPTS.md](docs/[1]-CONCEPTS.md) | Core Concepts |
-| [docs/[2]-COMPARISON-MCP.md](docs/[2]-COMPARISON-MCP.md) | MCP Comparison |
-| [docs/[3]-COMPARISON-CLASS.md](docs/[3]-COMPARISON-CLASS.md) | Class / OOP Comparison |
-| [docs/[4]-GETTING-STARTED.md](docs/[4]-GETTING-STARTED.md) | Getting Started |
-| [docs/[5]-SPECIFICATION.md](docs/[5]-SPECIFICATION.md) | Full Specification |
+| [Concepts](https://github.com/z-order/wmcp/blob/main/docs/%5B1%5D-CONCEPTS.md) | Core Concepts |
+| [MCP Comparison](https://github.com/z-order/wmcp/blob/main/docs/%5B2%5D-COMPARISON-MCP.md) | MCP Comparison |
+| [Class / OOP Comparison](https://github.com/z-order/wmcp/blob/main/docs/%5B3%5D-COMPARISON-CLASS.md) | Class / OOP Comparison |
+| [Getting Started](https://github.com/z-order/wmcp/blob/main/docs/%5B4%5D-GETTING-STARTED.md) | Getting Started |
+| [Specification](https://github.com/z-order/wmcp/blob/main/docs/%5B5%5D-SPECIFICATION.md) | Full Specification |
 
 ## Project structure
 
