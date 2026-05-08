@@ -40,6 +40,7 @@ export class KanbanModule {
 
   constructor() {
     this.wmcpClient = new WmcpClient(manifest as unknown as WmcpManifest);
+    this.wmcpClient._requireReadiness();
 
     this.wmcpClient._registerCapabilities({
       'kanban:getBoard': async () => {
@@ -84,6 +85,8 @@ export class KanbanModule {
     console.log(
       `[Kanban] swimlanes=${config.swimlanes} assignees=${JSON.stringify(config.assignees)}`,
     );
+
+    this.wmcpClient._setReady();
   }
 
   getBoard(): Board | null {

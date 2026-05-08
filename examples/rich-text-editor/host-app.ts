@@ -83,6 +83,8 @@ async function main() {
     console.log('[Host] selection:changed:', data);
   });
 
+  host.on('wmcp:ready', () => console.log('[Host] Module is ready'));
+
   await editor.mount({
     config: {
       theme: 'dark',

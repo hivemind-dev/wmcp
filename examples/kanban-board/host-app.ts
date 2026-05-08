@@ -118,6 +118,8 @@ async function main() {
     console.log('[Host] board:changed:', data);
   });
 
+  host.on('wmcp:ready', () => console.log('[Host] Module is ready'));
+
   await kanban.mount({
     config: {
       columns: ['To Do', 'In Progress', 'Done'],

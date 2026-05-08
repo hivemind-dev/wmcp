@@ -39,6 +39,8 @@ export default function CSRPage() {
       log(`Event counter:changed -> ${d.value}`);
     });
 
+    host.on("wmcp:ready", () => log("Event wmcp:ready (module signaled readiness)"));
+
     moduleRef.current = counter;
     hostRef.current = host;
     log("CSR bindings connected (HTTP adapters for host:requires)");

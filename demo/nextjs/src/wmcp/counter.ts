@@ -63,6 +63,7 @@ export class CounterModule {
 
   constructor() {
     this.wmcpClient = new WmcpClient(counterManifest);
+    this.wmcpClient._requireReadiness();
 
     this.wmcpClient._registerCapabilities({
       "counter:get": async () => ({ value: this.value }),
@@ -93,6 +94,8 @@ export class CounterModule {
   async mount(_options?: WmcpMountOptions): Promise<void> {
     const saved = await this.wmcpClient.call<{ value: number }>("persist:load");
     this.value = saved.value;
+
+    this.wmcpClient._setReady();
   }
 
   getValue(): number {

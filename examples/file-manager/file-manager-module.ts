@@ -45,6 +45,7 @@ export class FileManagerModule {
 
   constructor() {
     this.wmcpClient = new WmcpClient(manifest as unknown as WmcpManifest);
+    this.wmcpClient._requireReadiness();
 
     this.wmcpClient._registerCapabilities({
       'fm:getSelectedPath': async () => this.getStateSnapshot(),
@@ -92,6 +93,8 @@ export class FileManagerModule {
     console.log(
       `[FileManagerModule] Mounted root=${this.rootPath} current=${this.currentPath} view=${this.viewMode} showHidden=${this.showHidden}`,
     );
+
+    this.wmcpClient._setReady();
   }
 
   getState(): FileManagerState {

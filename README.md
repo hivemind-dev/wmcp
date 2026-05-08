@@ -10,13 +10,13 @@ Inspired by the Model Context Protocol (MCP) for AI/LLM tool integration, wMCP a
 
 ## Quick links
 
-| Document | Description |
-|---|---|
-| [Concepts](https://github.com/z-order/wmcp/blob/main/docs/%5B1%5D-CONCEPTS.md) | Core Concepts |
-| [MCP Comparison](https://github.com/z-order/wmcp/blob/main/docs/%5B2%5D-COMPARISON-MCP.md) | MCP Comparison |
+| Document                                                                                             | Description            |
+| ---------------------------------------------------------------------------------------------------- | ---------------------- |
+| [Concepts](https://github.com/z-order/wmcp/blob/main/docs/%5B1%5D-CONCEPTS.md)                       | Core Concepts          |
+| [MCP Comparison](https://github.com/z-order/wmcp/blob/main/docs/%5B2%5D-COMPARISON-MCP.md)           | MCP Comparison         |
 | [Class / OOP Comparison](https://github.com/z-order/wmcp/blob/main/docs/%5B3%5D-COMPARISON-CLASS.md) | Class / OOP Comparison |
-| [Getting Started](https://github.com/z-order/wmcp/blob/main/docs/%5B4%5D-GETTING-STARTED.md) | Getting Started |
-| [Specification](https://github.com/z-order/wmcp/blob/main/docs/%5B5%5D-SPECIFICATION.md) | Full Specification |
+| [Getting Started](https://github.com/z-order/wmcp/blob/main/docs/%5B4%5D-GETTING-STARTED.md)         | Getting Started        |
+| [Specification](https://github.com/z-order/wmcp/blob/main/docs/%5B5%5D-SPECIFICATION.md)             | Full Specification     |
 
 ## Project structure
 
@@ -63,6 +63,8 @@ npx tsx examples/counter/mock-server.ts
 npx tsx examples/counter/host-app.ts --http
 ```
 
+**Optional: readiness gating (1.1.0+).** Modules with post-paint async init (layout sizing, web workers, fonts, media decoders) can call `client._requireReadiness()` after construction and `client._setReady()` once init drains. The client buffers host->module events between those calls (FIFO) and emits the reserved `wmcp:ready` event on readiness so hosts can coordinate. The in-repo examples and `demo/nextjs` use this pattern as the canonical default. See [Specification §7.5](docs/%5B5%5D-SPECIFICATION.md) and [Getting Started](docs/%5B4%5D-GETTING-STARTED.md).
+
 ## Manifest structure
 
 The manifest uses ownership-prefixed keys to make direction explicit:
@@ -73,31 +75,31 @@ The manifest uses ownership-prefixed keys to make direction explicit:
   "module": { "name": "@example/counter", "version": "1.0.0" },
   "mount": { "entry": "./counter-module.ts" },
   "module:capabilities": { "counter:get": {}, "counter:increment": {} },
-  "module:events":       { "counter:changed": {} },
-  "module:listeners":    { "counter:reset": {} },
-  "host:requires":       { "persist:load": {}, "persist:save": {} },
-  "host:config":         { "initialValue": { "type": "number", "default": 0 } }
+  "module:events": { "counter:changed": {} },
+  "module:listeners": { "counter:reset": {} },
+  "host:requires": { "persist:load": {}, "persist:save": {} },
+  "host:config": { "initialValue": { "type": "number", "default": 0 } }
 }
 ```
 
-| Key | Direction | Class analogy |
-|---|---|---|
-| `module:capabilities` | Host calls module | Concrete methods (overridable) |
-| `module:events` | Module -> host | Observer callbacks |
-| `module:listeners` | Host -> module | Parent notifications |
-| `host:requires` | Module calls host | Abstract methods |
-| `host:config` | Host -> module at mount | Constructor args |
+| Key                   | Direction               | Class analogy                  |
+| --------------------- | ----------------------- | ------------------------------ |
+| `module:capabilities` | Host calls module       | Concrete methods (overridable) |
+| `module:events`       | Module -> host          | Observer callbacks             |
+| `module:listeners`    | Host -> module          | Parent notifications           |
+| `host:requires`       | Module calls host       | Abstract methods               |
+| `host:config`         | Host -> module at mount | Constructor args               |
 
 ## Examples
 
-| Example | module:capabilities | host:requires |
-|---|---|---|
-| `counter` | get, increment | persist:load/save, log:write |
-| `rich-text-editor` | getContent, setContent, format | doc:load/save/list/export |
-| `analytics-dashboard` | getFilters, setChart, refresh | metrics:query/aggregate/live |
-| `file-manager` | getSelectedPath, navigate, setViewMode | fs:list/read/write/delete/move |
-| `kanban-board` | getBoard, getCard, moveCard | board:load, card:create/update/move/delete |
-| `media-player` | play, pause, stop, getState, setVolume | playlist:load/add/remove, track:info/stream |
+| Example               | module:capabilities                    | host:requires                               |
+| --------------------- | -------------------------------------- | ------------------------------------------- |
+| `counter`             | get, increment                         | persist:load/save, log:write                |
+| `rich-text-editor`    | getContent, setContent, format         | doc:load/save/list/export                   |
+| `analytics-dashboard` | getFilters, setChart, refresh          | metrics:query/aggregate/live                |
+| `file-manager`        | getSelectedPath, navigate, setViewMode | fs:list/read/write/delete/move              |
+| `kanban-board`        | getBoard, getCard, moveCard            | board:load, card:create/update/move/delete  |
+| `media-player`        | play, pause, stop, getState, setVolume | playlist:load/add/remove, track:info/stream |
 
 ## Security
 

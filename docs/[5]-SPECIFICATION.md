@@ -114,13 +114,13 @@ The manifest is a JSON object. Field names are case-sensitive. Unless stated oth
 
 ### 4.1 `wmcp` (REQUIRED)
 
-- **Type:** string  
-- **Semantics:** Protocol version identifier.  
+- **Type:** string
+- **Semantics:** Protocol version identifier.
 - **Requirements:** The value MUST be a version supported by the implementation. For this draft, the only defined value is `"1.0"`. Implementations receiving an unsupported value MUST NOT proceed with bind without explicit error or version negotiation outside the scope of this document.
 
 ### 4.2 `module` (REQUIRED)
 
-- **Type:** object  
+- **Type:** object
 - **Fields:**
   - `name` (REQUIRED): string. Logical package or module name. It SHOULD follow npm package naming conventions (lowercase, URL-safe, scoped names allowed with `/`).
   - `version` (REQUIRED): string. MUST be a valid semantic version string per the Semantic Versioning specification as commonly applied in JavaScript ecosystems.
@@ -128,7 +128,7 @@ The manifest is a JSON object. Field names are case-sensitive. Unless stated oth
 
 ### 4.3 `mount` (REQUIRED)
 
-- **Type:** object  
+- **Type:** object
 - **Fields:**
   - `entry` (REQUIRED): string. Path or URL to the module's JavaScript (or equivalent) entry point relative to the package root or as resolved by the host's bundler.
   - `styles` (OPTIONAL): string. Path or URL to a CSS file associated with the module.
@@ -136,66 +136,66 @@ The manifest is a JSON object. Field names are case-sensitive. Unless stated oth
 
 ### 4.4 `module:capabilities` (REQUIRED)
 
-- **Type:** object whose keys are capability names and values are Capability objects (`Record<string, Capability>`).  
-- **Semantics:** Operations the **module provides** with a default implementation. The host MAY invoke them and MAY override them.  
+- **Type:** object whose keys are capability names and values are Capability objects (`Record<string, Capability>`).
+- **Semantics:** Operations the **module provides** with a default implementation. The host MAY invoke them and MAY override them.
 - **Key conventions:** Names SHOULD use the form `namespace:action` (e.g., `doc:save`, `fs:list`) to reduce collisions across vendors and domains.
 
 Each **Capability** object has the following members:
 
-| Member        | Presence   | Type / Values | Semantics |
-|---------------|------------|---------------|-----------|
-| `description` | REQUIRED   | string        | Human-readable explanation of the capability. |
-| `mode`        | REQUIRED   | `"request"` \| `"stream"` | Unary call versus streaming response. |
-| `optional`    | OPTIONAL   | boolean       | Default `false`. When applied to a **module-provided** capability, semantics are defined by the implementation (for example, whether the host may omit calling it); for **requirements** (`host:requires`), see Section 5.1. |
-| `params`      | OPTIONAL   | `Record<string, ParamDef>` | Named parameters. |
-| `returns`     | OPTIONAL   | TypeDef       | Declared result type for request mode; for stream mode, implementations MAY interpret as element type of the stream. |
-| `hint`        | OPTIONAL   | object        | Advisory HTTP mapping; primarily useful on `host:requires` entries; see below. |
+| Member        | Presence | Type / Values              | Semantics                                                                                                                                                                                                                    |
+| ------------- | -------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `description` | REQUIRED | string                     | Human-readable explanation of the capability.                                                                                                                                                                                |
+| `mode`        | REQUIRED | `"request"` \| `"stream"`  | Unary call versus streaming response.                                                                                                                                                                                        |
+| `optional`    | OPTIONAL | boolean                    | Default `false`. When applied to a **module-provided** capability, semantics are defined by the implementation (for example, whether the host may omit calling it); for **requirements** (`host:requires`), see Section 5.1. |
+| `params`      | OPTIONAL | `Record<string, ParamDef>` | Named parameters.                                                                                                                                                                                                            |
+| `returns`     | OPTIONAL | TypeDef                    | Declared result type for request mode; for stream mode, implementations MAY interpret as element type of the stream.                                                                                                         |
+| `hint`        | OPTIONAL | object                     | Advisory HTTP mapping; primarily useful on `host:requires` entries; see below.                                                                                                                                               |
 
 The **hint** object, when present, SHOULD contain:
 
-- `method`: string (e.g., HTTP method name in uppercase).  
+- `method`: string (e.g., HTTP method name in uppercase).
 - `path`: string (e.g., URL template or path).
 
 Hints are advisory only; the host MAY ignore them entirely.
 
 Each **ParamDef** object:
 
-| Member        | Presence   | Type / Values | Semantics |
-|---------------|------------|---------------|-----------|
-| `type`        | REQUIRED   | `"string"` \| `"number"` \| `"boolean"` \| `"object"` \| `"array"` \| `"blob"` | Parameter type classification. |
-| `required`    | OPTIONAL   | boolean       | Default `false`. If `true`, the parameter MUST be present and satisfy type and enum constraints when the operation is invoked. |
-| `description` | OPTIONAL   | string        | Documentation. |
-| `enum`        | OPTIONAL   | array         | If present, the value MUST be one of the listed elements after coercion rules defined by the implementation. |
+| Member        | Presence | Type / Values                                                                  | Semantics                                                                                                                      |
+| ------------- | -------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `type`        | REQUIRED | `"string"` \| `"number"` \| `"boolean"` \| `"object"` \| `"array"` \| `"blob"` | Parameter type classification.                                                                                                 |
+| `required`    | OPTIONAL | boolean                                                                        | Default `false`. If `true`, the parameter MUST be present and satisfy type and enum constraints when the operation is invoked. |
+| `description` | OPTIONAL | string                                                                         | Documentation.                                                                                                                 |
+| `enum`        | OPTIONAL | array                                                                          | If present, the value MUST be one of the listed elements after coercion rules defined by the implementation.                   |
 
 Each **TypeDef** object:
 
-| Member        | Presence   | Type / Values | Semantics |
-|---------------|------------|---------------|-----------|
-| `type`        | REQUIRED   | `"string"` \| `"number"` \| `"boolean"` \| `"object"` \| `"array"` \| `"void"` \| `"blob"` | Declared type. |
-| `description` | OPTIONAL | string        | Documentation. |
+| Member        | Presence | Type / Values                                                                              | Semantics      |
+| ------------- | -------- | ------------------------------------------------------------------------------------------ | -------------- |
+| `type`        | REQUIRED | `"string"` \| `"number"` \| `"boolean"` \| `"object"` \| `"array"` \| `"void"` \| `"blob"` | Declared type. |
+| `description` | OPTIONAL | string                                                                                     | Documentation. |
 
 ### 4.5 `host:requires` (OPTIONAL)
 
-- **Type:** `Record<string, Capability>` (same object shape as Section 4.4).  
+- **Type:** `Record<string, Capability>` (same object shape as Section 4.4).
 - **Semantics:** Operations the **module requires** the host to implement. Invocations from the module toward these names use the transport bindings supplied at `connect()` / `connectDirect()` (Section 6).
 
 If `optional` is false or omitted on a requirement, the host MUST register a handler before bind completes.
 
 ### 4.6 `module:events` (OPTIONAL)
 
-- **Type:** `Record<string, Event>`.  
+- **Type:** `Record<string, Event>`.
 - **Semantics:** Notifications emitted **from the module toward the host**.
 
 Each **Event** object:
 
-| Member        | Presence   | Type | Semantics |
-|---------------|------------|------|-----------|
-| `description` | REQUIRED   | string | Human-readable description of when the event fires. |
-| `data`        | REQUIRED   | `Record<string, TypeDef>` | Named fields of the event payload and their types. |
+| Member        | Presence | Type                      | Semantics                                           |
+| ------------- | -------- | ------------------------- | --------------------------------------------------- |
+| `description` | REQUIRED | string                    | Human-readable description of when the event fires. |
+| `data`        | REQUIRED | `Record<string, TypeDef>` | Named fields of the event payload and their types.  |
 
 ### 4.7 `module:listeners` (OPTIONAL)
 
-- **Type:** `Record<string, Event>` (same shape as Section 4.6).  
+- **Type:** `Record<string, Event>` (same shape as Section 4.6).
 - **Semantics:** Notifications the **host may emit toward the module**. The module subscribes via the same subscription API used for host-side `module:events` listeners, as defined by the implementation (for example `on()`).
 
 ### 4.8 `host:config` (OPTIONAL)
@@ -204,13 +204,13 @@ Each **Event** object:
 
 Each **ConfigParam** object:
 
-| Member        | Presence   | Type / Values | Semantics |
-|---------------|------------|---------------|-----------|
-| `type`        | REQUIRED   | `"string"` \| `"number"` \| `"boolean"` \| `"array"` \| `"object"` | Configuration value kind. |
-| `required`    | OPTIONAL   | boolean       | Default `false`. If `true`, the host MUST supply a value at mount or initialization unless a `default` is defined. |
-| `default`     | OPTIONAL   | any JSON value compatible with `type` | Default if the host omits the key. |
-| `enum`        | OPTIONAL   | array         | Allowed values when applicable. |
-| `description` | OPTIONAL   | string        | Documentation. |
+| Member        | Presence | Type / Values                                                      | Semantics                                                                                                          |
+| ------------- | -------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `type`        | REQUIRED | `"string"` \| `"number"` \| `"boolean"` \| `"array"` \| `"object"` | Configuration value kind.                                                                                          |
+| `required`    | OPTIONAL | boolean                                                            | Default `false`. If `true`, the host MUST supply a value at mount or initialization unless a `default` is defined. |
+| `default`     | OPTIONAL | any JSON value compatible with `type`                              | Default if the host omits the key.                                                                                 |
+| `enum`        | OPTIONAL | array                                                              | Allowed values when applicable.                                                                                    |
+| `description` | OPTIONAL | string                                                             | Documentation.                                                                                                     |
 
 ## 5. Requirements, Capabilities, Overrides, and Binding
 
@@ -232,7 +232,7 @@ Validation MUST occur when `connect()`, `connectDirect()`, or the implementation
 
 The runtime MUST verify:
 
-- Every required `host:requires` entry has a host handler.  
+- Every required `host:requires` entry has a host handler.
 - Every `module:capabilities` key has a registered module handler.
 
 Additional validation (parameter schemas, event names) MAY occur at bind time or at first use; implementations SHOULD document their behavior.
@@ -243,8 +243,8 @@ The host MAY replace a module's default implementation for a name declared in `m
 
 The override function MUST conform to the following contract:
 
-- **Signature:** `(params, superFn) => result` (or the language-appropriate async equivalent returning a Promise for `mode: "request"`, or an async iterable for `mode: "stream"`).  
-- **params:** The invocation parameters supplied by the host (or runtime) when the capability is called.  
+- **Signature:** `(params, superFn) => result` (or the language-appropriate async equivalent returning a Promise for `mode: "request"`, or an async iterable for `mode: "stream"`).
+- **params:** The invocation parameters supplied by the host (or runtime) when the capability is called.
 - **superFn:** A callable reference to the **module's default implementation** for the same capability.
 
 The host override MAY call `superFn` with the same or modified parameters, MAY modify the return value, or MAY skip calling `superFn` entirely.
@@ -309,7 +309,7 @@ Delivery of `module:listeners` events from host to module MUST be **in-process**
 
 The protocol MAY be extended with:
 
-- **postMessage** transport for iframe-isolated modules communicating with a parent browsing context.  
+- **postMessage** transport for iframe-isolated modules communicating with a parent browsing context.
 - **WebSocket** transport for bidirectional real-time channels.
 
 Such extensions MUST preserve the manifest semantics for requirements, capabilities, and events and MUST NOT weaken the credential isolation requirements in Section 9.1 unless a revised security analysis is published with the extension.
@@ -318,15 +318,16 @@ Such extensions MUST preserve the manifest semantics for requirements, capabilit
 
 The following sequence reflects the normative initialization and teardown order:
 
-1. The module constructs **WmcpClient** (or equivalent) bound to the parsed manifest.  
-2. The module registers default handlers for every `module:capabilities` key (e.g., via `_registerCapabilities()` or equivalent).  
-3. The host constructs **WmcpHost** (or equivalent) with the client.  
-4. The host MAY register overrides for `module:capabilities` names (Section 5.4).  
-5. The host calls `connect()` or `connectDirect()` to bind `host:requires` handlers; this step triggers bind-time validation (Section 5.3).  
-6. The host subscribes to `module:events` via `on()` (or equivalent); the module subscribes to `module:listeners` via `on()` (or equivalent).  
-7. The host **mounts** the module (Section 2, **Mount**).  
-8. **Runtime:** bidirectional requirement calls, capability calls (with dynamic dispatch), and events.  
-9. **Teardown:** the host calls `destroy()` (or equivalent) on the host/client when the module is removed or the host navigates away.
+1. The module constructs **WmcpClient** (or equivalent) bound to the parsed manifest.
+2. The module registers default handlers for every `module:capabilities` key (e.g., via `_registerCapabilities()` or equivalent).
+3. The host constructs **WmcpHost** (or equivalent) with the client.
+4. The host MAY register overrides for `module:capabilities` names (Section 5.4).
+5. The host calls `connect()` or `connectDirect()` to bind `host:requires` handlers; this step triggers bind-time validation (Section 5.3).
+6. The host subscribes to `module:events` via `on()` (or equivalent); the module subscribes to `module:listeners` via `on()` (or equivalent).
+7. The host **mounts** the module (Section 2, **Mount**).
+8. **Readiness (OPTIONAL):** if the module opted in to readiness gating per Section 7.5, the host SHOULD await the reserved `wmcp:ready` event before emitting `module:listeners` events; otherwise the runtime buffers them transparently.
+9. **Runtime:** bidirectional requirement calls, capability calls (with dynamic dispatch), and events.
+10. **Teardown:** the host calls `destroy()` (or equivalent) on the host/client when the module is removed or the host navigates away.
 
 Steps 5 and 6 MAY be reordered only if the implementation guarantees that no event is emitted before listeners are registered, or if the implementation buffers events; otherwise, subscribers SHOULD register before mount.
 
@@ -340,9 +341,9 @@ The module SHOULD initialize its user interface and load initial data using decl
 
 During runtime:
 
-- The module invokes `host:requires` through `call()` for `mode: "request"` and `stream()` for `mode: "stream"`.  
-- The host invokes `module:capabilities` through the protocol (e.g., `wmcpClient.call()`), respecting overrides.  
-- The module emits `module:events` through `emit()` (or equivalent); the host receives them via `on()`.  
+- The module invokes `host:requires` through `call()` for `mode: "request"` and `stream()` for `mode: "stream"`.
+- The host invokes `module:capabilities` through the protocol (e.g., `wmcpClient.call()`), respecting overrides.
+- The module emits `module:events` through `emit()` (or equivalent); the host receives them via `on()`.
 - The host emits `module:listeners` notifications toward the module according to the implementation; the module receives them via `on()`.
 
 ### 7.3 Event Handling
@@ -371,7 +372,7 @@ All wMCP-specific errors MUST extend `WmcpError` (or carry equivalent type discr
 
 Thrown when bind-time validation fails because:
 
-- a required `host:requires` entry has no host handler, or  
+- a required `host:requires` entry has no host handler, or
 - a key in `module:capabilities` has no registered module handler.
 
 The error object MUST identify the **name** (manifest key) and SHOULD distinguish **host**-side missing handlers from **module**-side missing registrations when the implementation supports both cases.
@@ -426,5 +427,5 @@ Nested extension points within standard objects SHOULD use the same `x-` prefix 
 
 ## Informative References
 
-- Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997.  
+- Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997.
 - Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words", BCP 14, RFC 8174, May 2017.

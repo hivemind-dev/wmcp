@@ -54,6 +54,7 @@ export class MediaPlayerModule {
 
   constructor() {
     this.wmcpClient = new WmcpClient(manifest as unknown as WmcpManifest);
+    this.wmcpClient._requireReadiness();
 
     this.wmcpClient._registerCapabilities({
       'player:play': async (params) => {
@@ -108,6 +109,8 @@ export class MediaPlayerModule {
     console.log(
       `[PlayerModule] Mounted volume=${this.volume} autoplay=${this.autoplay} repeat=${this.repeat} shuffle=${this.shuffle}`,
     );
+
+    this.wmcpClient._setReady();
   }
 
   async loadPlaylist(playlistId: string): Promise<Playlist> {

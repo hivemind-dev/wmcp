@@ -162,6 +162,7 @@ async function main() {
   host.on('fs:selected', (data) => console.log('[Host] fs:selected:', data));
   host.on('fs:renamed', (data) => console.log('[Host] fs:renamed:', data));
   host.on('fs:deleted', (data) => console.log('[Host] fs:deleted:', data));
+  host.on('wmcp:ready', () => console.log('[Host] Module is ready'));
 
   await fm.mount({ config: { rootPath: '/', viewMode: 'tree', showHidden: false } });
 

@@ -39,6 +39,16 @@ export class WmcpClient {
 
   private bound = false;
 
+  /**
+   * Module readiness gate. Default true = no gating (backward compatible).
+   * Modules with post-paint async init opt in by calling _requireReadiness()
+   * in their constructor and _setReady() once init drains.
+   */
+  private ready = true;
+
+  /** Buffered host->module events received while not ready. FIFO. */
+  private pendingFromHost: Array<{ event: string; data: unknown }> = [];
+
   constructor(manifest: WmcpManifest) {
     this.manifest = manifest;
   }
@@ -96,6 +106,44 @@ export class WmcpClient {
    */
   _override(name: string, handler: OverrideHandler): void {
     this.overrideHandlers.set(name, handler);
+  }
+
+  // ------------------------------------------------------------------
+  // Readiness gating (opt-in)
+  // ------------------------------------------------------------------
+
+  /**
+   * Opt in to readiness gating. After this call, host->module event
+   * deliveries are buffered (FIFO) until the module signals readiness via
+   * _setReady(). Should be called early in the module's lifecycle, typically
+   * right after `new WmcpClient(manifest)` in the module constructor.
+   *
+   * Modules that never call this method behave as in pre-1.1.0 wMCP:
+   * every host->module event is delivered immediately.
+   */
+  _requireReadiness(): void {
+    this.ready = false;
+  }
+
+  /**
+   * Module signals it has finished mounting and is ready to receive
+   * host->module events. Buffered events are replayed in FIFO order, then
+   * the reserved `wmcp:ready` event is emitted to the host exactly once
+   * per mount. Idempotent — only the first call has effect.
+   *
+   * Modules with post-paint async init (rendering, web workers, fonts,
+   * media decoders) should call this once that init has drained — typically
+   * after one or two `requestAnimationFrame` callbacks.
+   */
+  _setReady(): void {
+    if (this.ready) return;
+    this.ready = true;
+    const queue = this.pendingFromHost;
+    this.pendingFromHost = [];
+    for (const { event, data } of queue) {
+      this._emitToModule(event, data);
+    }
+    this.emit('wmcp:ready', {});
   }
 
   // ------------------------------------------------------------------
@@ -209,8 +257,18 @@ export class WmcpClient {
     };
   }
 
-  /** Host emits an event to the module (called by WmcpHost). */
+  /**
+   * Host emits an event to the module (called by WmcpHost).
+   *
+   * If the module has opted in to readiness gating via _requireReadiness()
+   * and has not yet called _setReady(), the event is buffered (FIFO) and
+   * replayed on _setReady(). Otherwise it dispatches synchronously.
+   */
   _emitToModule(event: string, data: unknown): void {
+    if (!this.ready) {
+      this.pendingFromHost.push({ event, data });
+      return;
+    }
     const listeners = this.moduleEventListeners.get(event);
     if (listeners) {
       for (const cb of listeners) {
@@ -234,6 +292,8 @@ export class WmcpClient {
     this.hostEventListeners.clear();
     this.moduleEventListeners.clear();
     this.bound = false;
+    this.ready = true;
+    this.pendingFromHost = [];
   }
 
   // ------------------------------------------------------------------

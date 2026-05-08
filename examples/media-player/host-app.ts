@@ -121,6 +121,8 @@ async function main() {
     console.log('[Host] track:ended:', data);
   });
 
+  host.on('wmcp:ready', () => console.log('[Host] Module is ready'));
+
   await player.mount({
     config: { volume: 0.7, autoplay: false, repeat: 'off', shuffle: false },
   });

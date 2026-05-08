@@ -61,6 +61,7 @@ async function main() {
 
   host.on('filter:changed', (data) => console.log('[Host] filter:changed:', data));
   host.on('chart:clicked', (data) => console.log('[Host] chart:clicked:', data));
+  host.on('wmcp:ready', () => console.log('[Host] Module is ready'));
 
   await dashboard.mount({
     config: {

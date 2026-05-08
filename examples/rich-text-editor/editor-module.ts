@@ -28,6 +28,7 @@ export class RichEditorModule {
 
   constructor() {
     this.wmcpClient = new WmcpClient(manifest as unknown as WmcpManifest);
+    this.wmcpClient._requireReadiness();
 
     this.wmcpClient._registerCapabilities({
       'editor:getContent': async () => ({
@@ -117,6 +118,8 @@ export class RichEditorModule {
     console.log(
       `[RichEditor] Mounted theme="${this.theme}" locale="${this.locale}" readOnly=${this.readOnly} toolbar=${JSON.stringify(this.toolbar)}`,
     );
+
+    this.wmcpClient._setReady();
   }
 
   async loadDocument(docId: string): Promise<EditorDocument> {

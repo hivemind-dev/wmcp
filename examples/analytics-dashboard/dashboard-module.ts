@@ -39,6 +39,7 @@ export class DashboardModule {
 
   constructor() {
     this.wmcpClient = new WmcpClient(manifest as unknown as WmcpManifest);
+    this.wmcpClient._requireReadiness();
 
     this.wmcpClient._registerCapabilities({
       'dashboard:getFilters': async () => ({
@@ -93,6 +94,8 @@ export class DashboardModule {
     console.log(
       `[DashboardModule] Mounted. chartType=${this.chartType}, refreshInterval=${this.refreshInterval}ms`,
     );
+
+    this.wmcpClient._setReady();
   }
 
   async queryMetrics(

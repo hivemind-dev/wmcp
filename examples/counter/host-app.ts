@@ -43,6 +43,9 @@ async function runInMemoryMode() {
     console.log(`[Host] Event counter:changed:`, data);
   });
 
+  // Reserved protocol event — fires once after the module's _setReady().
+  host.on('wmcp:ready', () => console.log('[Host] Module is ready'));
+
   await counter.mount({ config: { initialValue: 0 } });
 
   // Host calls module:capabilities
@@ -97,6 +100,8 @@ async function runOverrideMode() {
   host.on('counter:changed', (data) => {
     console.log(`[Host] Event counter:changed:`, data);
   });
+
+  host.on('wmcp:ready', () => console.log('[Host] Module is ready'));
 
   await counter.mount({ config: { initialValue: 0 } });
 
@@ -157,6 +162,8 @@ async function runHttpMode() {
   host.on('counter:changed', (data) => {
     console.log(`[Host] Event counter:changed:`, data);
   });
+
+  host.on('wmcp:ready', () => console.log('[Host] Module is ready'));
 
   await counter.mount();
 
