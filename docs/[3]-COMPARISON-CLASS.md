@@ -6,21 +6,21 @@ wMCP models the relationship between a **module** and its **host** the same way 
 
 ## 1. Side-by-side mapping
 
-| OOP Concept | wMCP Equivalent | Manifest Key | Direction |
-|---|---|---|---|
-| Base class | Module (sub-project) | -- | -- |
-| Derived class | Host (top-project) | -- | -- |
-| Concrete method (overridable) | Capability | `module:capabilities` | Host calls module |
-| Abstract method (must be implemented) | Requirement | `host:requires` | Module calls host |
-| Optional abstract method | Optional requirement | `host:requires` + `optional: true` | Module calls host |
-| `super()` call | `superFn(params)` in override handler | -- | -- |
-| Method override | `host.override(name, handler)` | -- | -- |
-| Constructor args | Config | `host:config` | Host -> module at mount |
-| Observer / event callback | Event | `module:events` | Module -> host |
-| Parent notification | Listener | `module:listeners` | Host -> module |
-| Interface / contract | Manifest | `manifest.json` | Declared by module |
-| Instantiation | `new CounterModule()` + mount | -- | -- |
-| Destruction | `host.destroy()` + `client.destroy()` | -- | -- |
+| OOP Concept                           | wMCP Equivalent                       | Manifest Key                       | Direction               |
+| ------------------------------------- | ------------------------------------- | ---------------------------------- | ----------------------- |
+| Base class                            | Module (sub-project)                  | --                                 | --                      |
+| Derived class                         | Host (top-project)                    | --                                 | --                      |
+| Concrete method (overridable)         | Capability                            | `module:capabilities`              | Host calls module       |
+| Abstract method (must be implemented) | Requirement                           | `host:requires`                    | Module calls host       |
+| Optional abstract method              | Optional requirement                  | `host:requires` + `optional: true` | Module calls host       |
+| `super()` call                        | `superFn(params)` in override handler | --                                 | --                      |
+| Method override                       | `host.override(name, handler)`        | --                                 | --                      |
+| Constructor args                      | Config                                | `host:config`                      | Host -> module at mount |
+| Observer / event callback             | Event                                 | `module:events`                    | Module -> host          |
+| Parent notification                   | Listener                              | `module:listeners`                 | Host -> module          |
+| Interface / contract                  | Manifest                              | `manifest.json`                    | Declared by module      |
+| Instantiation                         | `new CounterModule()` + mount         | --                                 | --                      |
+| Destruction                           | `host.destroy()` + `client.destroy()` | --                                 | --                      |
 
 ---
 
@@ -81,7 +81,7 @@ class Counter {
 
 ```typescript
 this.wmcpClient._registerCapabilities({
-  'counter:increment': async (params) => {
+  "counter:increment": async (params) => {
     this.value += (params.amount as number) ?? 1;
     return { value: this.value };
   },
@@ -95,7 +95,7 @@ The host calls the capability the same way calling code invokes a method:
 const result = counter.increment(5);
 
 // wMCP
-const result = await host.call('counter:increment', { amount: 5 });
+const result = await host.call("counter:increment", { amount: 5 });
 ```
 
 ---
@@ -114,14 +114,14 @@ abstract class Counter {
 
   async increment(amount = 1) {
     this.value += amount;
-    await this.persistSave(this.value);   // call abstract
+    await this.persistSave(this.value); // call abstract
     return this.value;
   }
 }
 
 class AppCounter extends Counter {
   protected async persistSave(value: number) {
-    await db.set('counter', value);       // concrete impl
+    await db.set("counter", value); // concrete impl
   }
 }
 ```
@@ -130,12 +130,12 @@ class AppCounter extends Counter {
 
 ```typescript
 // Module calls host:requires (like calling an abstract method)
-await this.wmcpClient.call('persist:save', { value: this.value });
+await this.wmcpClient.call("persist:save", { value: this.value });
 
 // Host provides the implementation
 host.connectDirect({
-  'persist:save': async (params) => {
-    await db.set('counter', params.value);
+  "persist:save": async (params) => {
+    await db.set("counter", params.value);
     return { success: true };
   },
 });
@@ -156,9 +156,9 @@ In wMCP the host calls `host.override(name, handler)` where the handler receives
 ```typescript
 class AppCounter extends Counter {
   increment(amount = 1): number {
-    if (amount > 100) throw new Error('Too large');
-    const result = super.increment(amount);   // super()
-    analytics.track('increment', result);
+    if (amount > 100) throw new Error("Too large");
+    const result = super.increment(amount); // super()
+    analytics.track("increment", result);
     return result;
   }
 }
@@ -167,10 +167,10 @@ class AppCounter extends Counter {
 **wMCP:**
 
 ```typescript
-host.override('counter:increment', async (params, superFn) => {
-  if ((params.amount as number) > 100) throw new Error('Too large');
-  const result = await superFn(params);       // super()
-  analytics.track('increment', result);
+host.override("counter:increment", async (params, superFn) => {
+  if ((params.amount as number) > 100) throw new Error("Too large");
+  const result = await superFn(params); // super()
+  analytics.track("increment", result);
   return result;
 });
 ```
@@ -179,11 +179,11 @@ host.override('counter:increment', async (params, superFn) => {
 
 In OOP, if the base class internally calls `this.increment()`, the overridden version runs (virtual dispatch). wMCP works the same way: when the module internally calls `wmcpClient.call('counter:increment')`, the override chain executes. Direct private calls (`this.value += n`) bypass the override, just like calling a private method in OOP.
 
-| Call site | OOP | wMCP |
-|---|---|---|
-| External (host/caller) | `obj.increment()` | `host.call('counter:increment')` |
-| Internal (virtual dispatch) | `this.increment()` | `wmcpClient.call('counter:increment')` |
-| Internal (bypass override) | direct field access | `this.value += n` (private) |
+| Call site                   | OOP                 | wMCP                                   |
+| --------------------------- | ------------------- | -------------------------------------- |
+| External (host/caller)      | `obj.increment()`   | `host.call('counter:increment')`       |
+| Internal (virtual dispatch) | `this.increment()`  | `wmcpClient.call('counter:increment')` |
+| Internal (bypass override)  | direct field access | `this.value += n` (private)            |
 
 ---
 
@@ -221,21 +221,21 @@ When a base class emits state changes for external observers to react to.
 class Counter extends EventEmitter {
   increment(n: number) {
     this.value += n;
-    this.emit('changed', { value: this.value });
+    this.emit("changed", { value: this.value });
   }
 }
 
-counter.on('changed', (data) => console.log(data));
+counter.on("changed", (data) => console.log(data));
 ```
 
 **wMCP:**
 
 ```typescript
 // Module emits
-this.wmcpClient.emit('counter:changed', { value: this.value });
+this.wmcpClient.emit("counter:changed", { value: this.value });
 
 // Host listens
-host.on('counter:changed', (data) => console.log(data));
+host.on("counter:changed", (data) => console.log(data));
 ```
 
 ### module:listeners = inbound parent notifications
@@ -259,10 +259,12 @@ counter.onReset();
 
 ```typescript
 // Module subscribes
-this.wmcpClient.on('counter:reset', () => { this.value = 0; });
+this.wmcpClient.on("counter:reset", () => {
+  this.value = 0;
+});
 
 // Host emits
-host.emit('counter:reset', {});
+host.emit("counter:reset", {});
 ```
 
 ---
@@ -308,16 +310,16 @@ Both serve the same purpose: a **declarative contract** that tooling, validators
 
 ## 9. Lifecycle = construction, wiring, runtime, destruction
 
-| Phase | OOP | wMCP |
-|---|---|---|
-| Declare contract | `interface ICounter` | `manifest.json` |
-| Base implementation | `class Counter implements ICounter` | `CounterModule` + `_registerCapabilities()` |
-| Subclass / extend | `class App extends Counter` | `host.override()` |
-| Wire abstracts | constructor dependency injection | `host.connectDirect()` / `host.connect()` |
-| Validate | compile-time type checks | bind-time validation (all requires bound) |
-| Initialize | `new AppCounter(config)` | `new CounterModule()` + `counter.mount(config)` |
-| Runtime | method calls + events | `host.call()` + `wmcpClient.call()` + events |
-| Destruction | `dispose()` / GC | `host.destroy()` + `client.destroy()` |
+| Phase               | OOP                                 | wMCP                                            |
+| ------------------- | ----------------------------------- | ----------------------------------------------- |
+| Declare contract    | `interface ICounter`                | `manifest.json`                                 |
+| Base implementation | `class Counter implements ICounter` | `CounterModule` + `_registerCapabilities()`     |
+| Subclass / extend   | `class App extends Counter`         | `host.override()`                               |
+| Wire abstracts      | constructor dependency injection    | `host.connectDirect()` / `host.connect()`       |
+| Validate            | compile-time type checks            | bind-time validation (all requires bound)       |
+| Initialize          | `new AppCounter(config)`            | `new CounterModule()` + `counter.mount(config)` |
+| Runtime             | method calls + events               | `host.call()` + `wmcpClient.call()` + events    |
+| Destruction         | `dispose()` / GC                    | `host.destroy()` + `client.destroy()`           |
 
 ---
 
@@ -325,14 +327,14 @@ Both serve the same purpose: a **declarative contract** that tooling, validators
 
 wMCP is not a class system. The table below notes the intentional differences.
 
-| OOP Feature | wMCP Behaviour | Reason |
-|---|---|---|
-| Multi-level inheritance | Single level: module default + host override | Keeps dispatch predictable across network/process boundaries |
-| Compile-time type safety | Runtime validation at bind time | Modules and hosts may ship independently |
-| Synchronous calls | All calls are async (`Promise`) | Supports HTTP, postMessage, and streaming transports |
-| In-process only | Transport-agnostic (in-process, HTTP, future WebSocket) | Module and host may run in different runtimes |
-| Tight coupling | Manifest as loose contract | Module is reusable across many hosts without recompilation |
-| Access modifiers (private/protected) | Only `module:capabilities` is callable; internal state is opaque | Security: host cannot read module internals directly |
+| OOP Feature                          | wMCP Behaviour                                                   | Reason                                                       |
+| ------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------ |
+| Multi-level inheritance              | Single level: module default + host override                     | Keeps dispatch predictable across network/process boundaries |
+| Compile-time type safety             | Runtime validation at bind time                                  | Modules and hosts may ship independently                     |
+| Synchronous calls                    | All calls are async (`Promise`)                                  | Supports HTTP, postMessage, and streaming transports         |
+| In-process only                      | Transport-agnostic (in-process, HTTP, future WebSocket)          | Module and host may run in different runtimes                |
+| Tight coupling                       | Manifest as loose contract                                       | Module is reusable across many hosts without recompilation   |
+| Access modifiers (private/protected) | Only `module:capabilities` is callable; internal state is opaque | Security: host cannot read module internals directly         |
 
 ---
 
@@ -361,16 +363,22 @@ abstract class Counter {
 
   protected abstract persistSave(v: number): Promise<void>;
   protected abstract persistLoad(): Promise<number>;
-  protected onChange(v: number): void { /* observer hook */ }
+  protected onChange(v: number): void {
+    /* observer hook */
+  }
 }
 
 class AppCounter extends Counter {
-  async persistSave(v: number) { await db.set('counter', v); }
-  async persistLoad() { return (await db.get('counter')) ?? 0; }
+  async persistSave(v: number) {
+    await db.set("counter", v);
+  }
+  async persistLoad() {
+    return (await db.get("counter")) ?? 0;
+  }
 
   // override
   increment(amount = 1): number {
-    if (amount > 100) throw new Error('Too large');
+    if (amount > 100) throw new Error("Too large");
     return super.increment(amount);
   }
 }
@@ -390,17 +398,17 @@ class CounterModule {
   constructor() {
     this.wmcpClient = new WmcpClient(manifest);
     this.wmcpClient._registerCapabilities({
-      'counter:get':       async () => ({ value: this.value }),
-      'counter:increment': async (p) => {
+      "counter:get": async () => ({ value: this.value }),
+      "counter:increment": async (p) => {
         this.value += (p.amount as number) ?? 1;
-        await this.wmcpClient.call('persist:save', { value: this.value });
-        this.wmcpClient.emit('counter:changed', { value: this.value });
+        await this.wmcpClient.call("persist:save", { value: this.value });
+        this.wmcpClient.emit("counter:changed", { value: this.value });
         return { value: this.value };
       },
     });
   }
   async mount(opts?: WmcpMountOptions) {
-    const saved = await this.wmcpClient.call<{value:number}>('persist:load');
+    const saved = await this.wmcpClient.call<{ value: number }>("persist:load");
     this.value = saved.value;
   }
 }
@@ -409,20 +417,23 @@ class CounterModule {
 const counter = new CounterModule();
 const host = new WmcpHost(counter.wmcpClient);
 
-host.override('counter:increment', async (params, superFn) => {
-  if ((params.amount as number) > 100) throw new Error('Too large');
+host.override("counter:increment", async (params, superFn) => {
+  if ((params.amount as number) > 100) throw new Error("Too large");
   return superFn(params);
 });
 
 host.connectDirect({
-  'persist:load': async () => ({ value: await db.get('counter') ?? 0 }),
-  'persist:save': async (p) => { await db.set('counter', p.value); return { success: true }; },
+  "persist:load": async () => ({ value: (await db.get("counter")) ?? 0 }),
+  "persist:save": async (p) => {
+    await db.set("counter", p.value);
+    return { success: true };
+  },
 });
 
-host.on('counter:changed', (d) => console.log('changed', d));
+host.on("counter:changed", (d) => console.log("changed", d));
 
 await counter.mount({ config: { initialValue: 0 } });
-await host.call('counter:increment', { amount: 5 });
+await host.call("counter:increment", { amount: 5 });
 ```
 
 The structure is the same: declare a contract, provide defaults, let the host extend and wire dependencies. wMCP adds transport flexibility and manifest-driven validation on top of the familiar pattern.
